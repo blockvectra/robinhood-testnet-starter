@@ -1,5 +1,5 @@
 import { formatEther, type Address } from "viem";
-import { GATEWAY, getChain, httpClient } from "./shared.js";
+import { API_BASE, getChain, httpClient } from "./shared.js";
 
 // Step 1: no account, no key. Read Robinhood Chain Testnet through the public endpoint.
 const SLUG = "robinhood_testnet";
@@ -7,7 +7,7 @@ const SLUG = "robinhood_testnet";
 const address = (process.argv[2] ?? "0x0000000000000000000000000000000000000000") as Address;
 
 const chain = await getChain(SLUG);
-const client = httpClient(chain, `${GATEWAY}/${SLUG}/public`);
+const client = httpClient(chain, `${API_BASE}/${SLUG}/public`);
 
 const [chainId, blockNumber, balance] = await Promise.all([
   client.getChainId(),

@@ -1,6 +1,6 @@
 import { createPublicClient, defineChain, http, webSocket } from "viem";
 
-export const GATEWAY = "https://api.blockvectra.com/v1";
+export const API_BASE = "https://api.blockvectra.com/v1";
 export const CONSOLE_API = "https://console-api.blockvectra.com/v1";
 export const REF = "gh-robinhood-testnet-starter";
 
@@ -16,7 +16,7 @@ export interface ChainEntry {
 
 /** Reads the live chain directory; nothing about limits or prices is hard-coded here. */
 export async function getChain(slug: string): Promise<ChainEntry> {
-  const res = await fetch(`${GATEWAY}/chains`);
+  const res = await fetch(`${API_BASE}/chains`);
   if (!res.ok) throw new Error(`GET /v1/chains failed: ${res.status}`);
   const { chains } = (await res.json()) as { chains: ChainEntry[] };
   const entry = chains.find((c) => c.chain === slug);

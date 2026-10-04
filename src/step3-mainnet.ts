@@ -1,4 +1,4 @@
-import { GATEWAY, getChain, httpClient } from "./shared.js";
+import { API_BASE, getChain, httpClient } from "./shared.js";
 
 // Step 3: same key, same code, different chain name. Testnet -> mainnet is a one-word change.
 const apiKey = process.env.BLOCKVECTRA_API_KEY?.trim();
@@ -10,11 +10,11 @@ console.log(`data API on testnet : ${testnet.data}`); // false: the Data API is 
 console.log(`data API on mainnet : ${mainnet.data}`);
 
 // JSON-RPC with the key: only the chain slug changes.
-const client = httpClient(mainnet, `${GATEWAY}/${mainnet.chain}`, apiKey);
+const client = httpClient(mainnet, `${API_BASE}/${mainnet.chain}`, apiKey);
 console.log(`mainnet block: ${await client.getBlockNumber()}`);
 
 // Data API: Robinhood stock-token leaderboard (see the Robinhood Chain guide).
-const res = await fetch(`${GATEWAY}/data/${mainnet.chain}/stocks`, { headers: { "x-api-key": apiKey } });
+const res = await fetch(`${API_BASE}/data/${mainnet.chain}/stocks`, { headers: { "x-api-key": apiKey } });
 if (!res.ok) throw new Error(`Data API failed: ${res.status} ${await res.text()}`);
 console.log(JSON.stringify(await res.json(), null, 2).slice(0, 2000));
 // Single token: GET /v1/data/robinhood_mainnet/stocks/{token}

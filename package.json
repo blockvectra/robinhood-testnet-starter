@@ -1,0 +1,21 @@
+{
+  "name": "robinhood-testnet-starter",
+  "version": "1.0.0",
+  "description": "Start on Robinhood Chain Testnet with BlockVectra: keyless read, programmatic sign-up, WebSocket logs, then mainnet",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "step1": "tsx src/step1-public-read.ts",
+    "step2": "tsx src/step2-key-and-logs.ts",
+    "step3": "tsx src/step3-mainnet.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "tsx": "^4.19.3",
+    "viem": "^2.23.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.6.3"
+  }
+}

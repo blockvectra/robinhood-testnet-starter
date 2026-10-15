@@ -2,7 +2,7 @@
 
 用 [BlockVectra](https://blockvectra.com/?ref=gh-robinhood-testnet-starter) 在 Robinhood Chain 测试网（链 ID 46630）上开发，再切换到主网的三步模板。
 
-指南：[Robinhood Chain on BlockVectra](https://docs.blockvectra.com/en/guides/robinhood-chain/?ref=gh-robinhood-testnet-starter)
+指南：[Robinhood Chain 测试网入门指南](https://docs.blockvectra.com/zh/guides/robinhood-testnet-starter/?ref=gh-robinhood-testnet-starter)
 
 ## 准备
 

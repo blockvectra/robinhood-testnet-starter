@@ -2,7 +2,7 @@
 
 A three-step template for building on Robinhood Chain Testnet (chain ID 46630) with [BlockVectra](https://blockvectra.com/?ref=gh-robinhood-testnet-starter), then moving to mainnet.
 
-Guide: [Robinhood Chain on BlockVectra](https://docs.blockvectra.com/en/guides/robinhood-chain/?ref=gh-robinhood-testnet-starter)
+Guide: [Robinhood Chain Testnet starter](https://docs.blockvectra.com/en/guides/robinhood-testnet-starter/?ref=gh-robinhood-testnet-starter)
 
 ## Setup
 

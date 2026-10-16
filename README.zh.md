@@ -4,6 +4,17 @@
 
 指南：[Robinhood Chain 测试网入门指南](https://docs.blockvectra.com/zh/guides/robinhood-testnet-starter/?ref=gh-robinhood-testnet-starter)
 
+## 选择任务
+
+[供 Agent 读取的任务表（JSON）](agent-tasks.json) · [带日期的内部 QA 示例](verified-walkthrough.example.json)
+
+| 任务 | 入口 | 凭据与副作用 |
+|---|---|---|
+| 免 key 测试网 RPC | `npm run step1` | 不需账户或 key；先确认网络，再读取区块和余额。 |
+| 测试网到主网连续流程 | `npm run walkthrough` | 复用已有 key，或签名登录并创建不会自动撤销的真实 key；钱包首次登录才开户。 |
+| 主网 RPC 与索引活动数据 | `npm run step3` | 需要 `BLOCKVECTRA_API_KEY`；读取链上活动数据，不是股票行情。 |
+| 测试 ETH | [Faucet 指南](https://docs.blockvectra.com/zh/guides/robinhood-testnet-faucet/?ref=gh-robinhood-testnet-starter) | 仅指南：本仓库不会提交领取请求。 |
+
 ## 准备
 
 ```bash
@@ -23,7 +34,7 @@ npm run walkthrough
 
 已有 key？若环境中已设置 `BLOCKVECTRA_API_KEY`，walkthrough 会复用该 key、跳过开户（不会创建账户），并用它执行同样的 logs 与主网阶段。
 
-未设置 key 时的副作用：未设置 `WALLET_PRIVATE_KEY` 时，会用新生成的一次性钱包登录，每次运行都会创建真实账户和真实 API key；进程结束后钱包和 key 即被丢弃，重复运行会不断创建新账户。不要把 `WALLET_PRIVATE_KEY` 设为持有资产或在别处使用的钱包，请只用一次性钱包。如需监听真实合约，请先修改 `src/step2-key-and-logs.ts` 中的示例 `address`。
+未设置 key 时的副作用：未设置 `WALLET_PRIVATE_KEY` 时，会用新生成的一次性钱包登录，每次运行都会创建真实账户和真实 API key；进程结束后，新生成的钱包和 key 的内存副本即被丢弃，重复运行会不断创建新账户。丢弃 secret 不等于服务器端撤销：本模板不会自动撤销它创建的 API key。不要把 `WALLET_PRIVATE_KEY` 设为持有资产或在别处使用的钱包，请只用一次性钱包。如需监听真实合约，请先修改 `src/step2-key-and-logs.ts` 中的示例 `address`。
 
 下面的分步命令仍可单独使用。
 
@@ -47,13 +58,13 @@ npm run step2
 - 连接 `wss://api.blockvectra.com/v1/robinhood_testnet/{api_key}` 订阅 `logs`；是否支持 WebSocket 及可订阅类型从 `GET https://api.blockvectra.com/v1/chains` 读取。
 - 建立订阅有时间上限：最多尝试 3 次，每次建立 WebSocket 连接并等到服务器对 `eth_subscribe` 的确认，限时 8 秒，尝试之间分别暂停 1 秒和 2 秒（总计最多约 27 秒）。握手报错或连接被关闭、或连接已打开但没有收到确认，会复用同一个内存中的 key 重试（不会重新开户或创建 key）；这类失败尝试的连接都会被关闭，并关闭 viem 自带的后台重连。RPC 错误回复（鉴权、策略、参数错误）不会重试。HTTP 4xx 握手拒绝只有在客户端能拿到状态码时才不重试；部分运行环境（例如 Node 原生 WebSocket）只给出不带状态码的错误事件，这种情况和其他初始失败一样，在同样的有限次数内处理。如果 8 秒到期时握手仍未完成，第 2 步会立即以 1 退出而不再重试，因为这个未完成的连接无法通过 viem 的公开 API 取消（之后才打开的 socket 会在打开时被关闭）；所以部分失败会早于 27 秒结束。只连上但没有确认不算成功。
 - 30 秒监听窗口在服务器确认订阅之后才开始计时。确认之后出现的任何订阅或连接错误，第 2 步都会立即以 1 退出（不重试，也不当作成功），因此不会执行主网读取。窗口结束时第 2 步会等待 `eth_unsubscribe` 的回复（最多 5 秒）；只有 result 严格等于 `true` 的回复才算成功，没有回复、返回错误、`false`、`null` 或其他格式异常的回复都以 1 退出。
-- 这只能恢复订阅建立之前的临时失败，不能恢复其他 WebSocket 错误，也没有在已认证的生产流量上验证过。
+- 这只能恢复订阅建立之前的临时失败。恢复行为已在隔离故障夹具中验证；下方带日期的真实服务 QA 示例是首次连接成功的运行。
 - 已有 key：`export BLOCKVECTRA_API_KEY=...` 即跳过开户。
-- `npm run step2 -- --then-mainnet` 会在 30 秒窗口结束后，用同一个内存中的 key 继续执行主网读取（`npm run walkthrough` 即使用此方式）。单独运行 `npm run step2` 在窗口结束后退出，生成的 key 随进程消失。
+- `npm run step2 -- --then-mainnet` 会在 30 秒窗口结束后，用同一个内存中的 key 继续执行主网读取（`npm run walkthrough` 即使用此方式）。单独运行 `npm run step2` 在窗口结束后退出，该进程不再提供新建 key 的 secret，但不会自动撤销服务器端 key。
 
 每个 `logs` 订阅必须包含 `address` 或 `topic0`；空过滤器会返回 `-32602 logs_filter_required`。运行第2步前，请将 `src/step2-key-and-logs.ts` 中的示例 `address` 改为要监听的合约地址。30秒监听期间没有匹配事件，并不代表连接失败。参见 [WebSocket 订阅指南](https://docs.blockvectra.com/zh/guides/websocket-subscriptions/)。
 
-运行这一步会为该钱包创建真实账户。如设置 `WALLET_PRIVATE_KEY`，只从本地环境变量读取，切勿提交到仓库；不设置则在内存里生成一次性钱包，运行结束即丢弃，想再次登录同一账户请设置 `WALLET_PRIVATE_KEY`。`.env` 与钱包文件已写入 `.gitignore`。
+未设置 `BLOCKVECTRA_API_KEY` 时，这一步会用钱包登录并创建 API key，只有该钱包首次登录才创建账户。如设置 `WALLET_PRIVATE_KEY`，只从本地环境变量读取，切勿提交到仓库；不设置则在内存里生成一次性钱包，运行结束即丢弃，想再次登录同一账户请设置 `WALLET_PRIVATE_KEY`。`.env` 与钱包文件已写入 `.gitignore`。
 
 ## 第 3 步：切到主网
 
@@ -71,6 +82,12 @@ curl -H "x-api-key: $BLOCKVECTRA_API_KEY" https://api.blockvectra.com/v1/data/ro
 ```
 
 测试网没有 Data API（`/v1/chains` 中 `robinhood_testnet` 的 `data` 为 `false`）。限额、支持的方法与价格会变化，请以 `/v1/chains`、`/v1/plans` 与[文档](https://docs.blockvectra.com/en/guides/robinhood-chain/?ref=gh-robinhood-testnet-starter)为准。
+
+## 带日期的内部 QA 示例
+
+2026-10-16 使用全新专用 QA 钱包，在[版本 `f350d8b1`](https://github.com/blockvectra/robinhood-testnet-starter/commit/f350d8b120c7fa52dc7fa46a95fc5318d5b948b5)真实运行 `npm run walkthrough`：收到订阅与取消订阅确认，然后用同一个内存中的 key 完成主网读取，以 0 退出。[脱敏回执](verified-walkthrough.example.json)列明了本次验证范围和限制。
+
+命令结束后，QA 工具另外撤销了它创建的 key，并验证预期的 401；这不是模板自带的自动清理。窗口内没有匹配的合约日志；该示例不保证事件送达、实时行情、外部采用或持续可用性。
 
 ## 许可证
 

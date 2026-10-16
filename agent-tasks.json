@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/blockvectra/robinhood-testnet-starter",
+  "setup": [
+    "npm install",
+    "npm run typecheck"
+  ],
+  "working_directory": "repository root",
+  "environment_note": ".env is not loaded automatically; export variables in the local environment.",
+  "task_map": [
+    {
+      "id": "public-testnet-read",
+      "intent": "Check the Robinhood testnet network, latest block and address balance without signing in.",
+      "command": "npm run step1",
+      "effects": [
+        "Read-only HTTP requests; no account, key or transaction is created."
+      ],
+      "success": "Live catalog chain_id matches eth_chainId before block/balance reads; exit 0.",
+      "guide": "https://docs.blockvectra.com/en/guides/robinhood-chain/?ref=gh-robinhood-testnet-starter",
+      "existing_api_key_required": false,
+      "networks": [
+        "robinhood_testnet"
+      ]
+    },
+    {
+      "id": "signed-walkthrough",
+      "intent": "Read the testnet, obtain or reuse a key, establish filtered logs, then read mainnet using the same key.",
+      "networks": [
+        "robinhood_testnet",
+        "robinhood_mainnet"
+      ],
+      "command": "npm run walkthrough",
+      "optional_environment": [
+        "BLOCKVECTRA_API_KEY",
+        "WALLET_PRIVATE_KEY"
+      ],
+      "effects": [
+        "An existing BLOCKVECTRA_API_KEY skips wallet login and key creation.",
+        "Without an existing API key, signs a SIWE login message and creates one API key; the first sign-in for that wallet creates an account.",
+        "Without WALLET_PRIVATE_KEY, a fresh throwaway wallet is generated in memory; repeated runs create new accounts.",
+        "Generated wallet/key secrets are discarded from memory at process exit; created server-side keys are not automatically revoked.",
+        "No on-chain transaction is submitted.",
+        "If supplying WALLET_PRIVATE_KEY, use a dedicated throwaway wallet, never one holding funds or used elsewhere."
+      ],
+      "success": "Step1 passes; logs subscription acknowledged, 30 seconds monitored, unsubscribe result=true; mainnet RPC and stocks reads succeed; exit 0.",
+      "failure": "Non-zero exit; logs setup/listening/unsubscribe failure prevents the mainnet read.",
+      "guide": "https://docs.blockvectra.com/en/guides/robinhood-testnet-starter/?ref=gh-robinhood-testnet-starter",
+      "example": "verified-walkthrough.example.json",
+      "existing_api_key_required": false,
+      "authenticated_stages_require_obtained_or_existing_key": true,
+      "stages": [
+        {
+          "stage": "public-testnet-read",
+          "network": "robinhood_testnet",
+          "requires_api_key": false,
+          "network_guard": "Compares live catalog chain_id with eth_chainId before other reads."
+        },
+        {
+          "stage": "filtered-logs",
+          "network": "robinhood_testnet",
+          "requires_api_key": true,
+          "filter_address": "0x1234567890123456789012345678901234567890"
+        },
+        {
+          "stage": "mainnet-read",
+          "network": "robinhood_mainnet",
+          "requires_api_key": true
+        }
+      ]
+    },
+    {
+      "id": "mainnet-read",
+      "intent": "Read a mainnet block and indexed stock-token activity using an existing key.",
+      "command": "npm run step3",
+      "required_environment": [
+        "BLOCKVECTRA_API_KEY"
+      ],
+      "effects": [
+        "Read-only HTTP requests; no account, key or transaction is created."
+      ],
+      "data_note": "On-chain stock-token activity, not stock-market quotes. The response may describe an earlier recorded day; inspect its day and metadata before treating it as current.",
+      "guide": "https://docs.blockvectra.com/en/guides/robinhood-chain/?ref=gh-robinhood-testnet-starter",
+      "existing_api_key_required": true,
+      "networks": [
+        "robinhood_mainnet"
+      ]
+    },
+    {
+      "id": "testnet-eth",
+      "intent": "Find supported testnet faucet requirements and error handling before requesting test ETH.",
+      "command": null,
+      "entry_type": "guide_only",
+      "effects": [
+        "This repository has no faucet claim command; opening the guide does not request funds."
+      ],
+      "guide": "https://docs.blockvectra.com/en/guides/robinhood-testnet-faucet/?ref=gh-robinhood-testnet-starter",
+      "existing_api_key_required": null,
+      "networks": [
+        "robinhood_testnet"
+      ]
+    }
+  ],
+  "live_capabilities": {
+    "chains": "https://api.blockvectra.com/v1/chains",
+    "plans": "https://api.blockvectra.com/v1/plans"
+  },
+  "discovery": {
+    "docs_MCP": "https://docs.blockvectra.com/mcp",
+    "MCP_setup_guide": "https://docs.blockvectra.com/en/guides/mcp-server/?ref=gh-robinhood-testnet-starter"
+  },
+  "attribution_note": "ref is an optional source label, not authenticated identity or proof of referral.",
+  "runtime": {
+    "node_major_minimum": 18
+  },
+  "field_notes": {
+    "existing_api_key_required": "Whether an API key must already exist before running the command; null means not applicable for a guide-only entry."
+  }
+}

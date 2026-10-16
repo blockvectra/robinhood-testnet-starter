@@ -41,8 +41,10 @@ export function httpClient(entry: ChainEntry, url: string, apiKey?: string) {
 }
 
 /** WebSocket client: the key goes in the URL path, wss://api.blockvectra.com/v1/{chain}/{api_key}. */
+export const wsUrl = (entry: ChainEntry, apiKey: string) => `wss://api.blockvectra.com/v1/${entry.chain}/${apiKey}`;
+
 export function wsClient(entry: ChainEntry, apiKey: string) {
-  const url = `wss://api.blockvectra.com/v1/${entry.chain}/${apiKey}`;
+  const url = wsUrl(entry, apiKey);
   return createPublicClient({ chain: toViemChain(entry, url), transport: webSocket(url) });
 }
 

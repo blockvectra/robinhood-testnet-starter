@@ -8,6 +8,7 @@
     "step1": "tsx src/step1-public-read.ts",
     "step2": "tsx src/step2-key-and-logs.ts",
     "step3": "tsx src/step3-mainnet.ts",
+    "walkthrough": "tsx src/step1-public-read.ts && tsx src/step2-key-and-logs.ts --then-mainnet",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

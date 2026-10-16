@@ -35,6 +35,8 @@ npm run step1            # or: npm run step1 -- 0xYourAddress
 
 Uses viem against the public endpoint `https://api.blockvectra.com/v1/robinhood_testnet/public` and reads `eth_chainId` (`0xb626`), the latest block number and an address balance. No account needed.
 
+Step 1 first checks the chain ID against the live catalog (`GET /v1/chains`) and only then reads the block and balance. If the catalog `chain_id` is invalid or does not match `eth_chainId`, step 1 exits non-zero, and `npm run walkthrough` does not continue to the sign-up and key stage. This guard applies only to this starter's step 1 and its walkthrough entry point, not to every RPC or MCP request.
+
 ## Step 2: get a key programmatically, stream logs over WebSocket
 
 ```bash

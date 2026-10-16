@@ -31,6 +31,8 @@ npm run step2
 - Subscribes to `logs` at `wss://api.blockvectra.com/v1/robinhood_testnet/{api_key}`. Supported subscriptions and the `ws` flag are read from `GET https://api.blockvectra.com/v1/chains`.
 - Already have a key? `export BLOCKVECTRA_API_KEY=...` and sign-up is skipped.
 
+Every `logs` subscription needs an `address` or `topic0`; an empty filter is rejected with `-32602 logs_filter_required`. Before running step 2, replace the example `address` in `src/step2-key-and-logs.ts` with the contract you want to watch. No matching events during the 30-second listening window does not establish a failed connection. See the [WebSocket subscription guide](https://docs.blockvectra.com/en/guides/websocket-subscriptions/).
+
 Running this step creates a real account for the wallet. Wallet private key: if you set `WALLET_PRIVATE_KEY`, read it from your local environment only and never commit it. Without it, a throwaway wallet is generated in memory and discarded when the run ends, so set `WALLET_PRIVATE_KEY` if you want to sign in to the same account again. `.env` and wallet files are in `.gitignore`.
 
 ## Step 3: switch to mainnet

@@ -47,9 +47,10 @@ if (!chain.ws || !chain.subscriptions.includes("logs")) {
 }
 console.log(`subscriptions (from /v1/chains): ${chain.subscriptions.join(", ")}`);
 
-// eth_subscribe "logs" with no filter = every log on the chain. Add `address` / `event` to narrow it.
+// Every logs subscription requires an address or topic0. Replace this example with the contract you want to watch.
 const client = wsClient(chain, apiKey);
 const stop = client.watchEvent({
+  address: "0x1234567890123456789012345678901234567890",
   onLogs: (logs) => {
     for (const l of logs) console.log(`block ${l.blockNumber} ${l.address} topic0=${l.topics[0]}`);
   },

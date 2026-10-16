@@ -31,6 +31,8 @@ npm run step2
 - 连接 `wss://api.blockvectra.com/v1/robinhood_testnet/{api_key}` 订阅 `logs`；是否支持 WebSocket 及可订阅类型从 `GET https://api.blockvectra.com/v1/chains` 读取。
 - 已有 key：`export BLOCKVECTRA_API_KEY=...` 即跳过开户。
 
+每个 `logs` 订阅必须包含 `address` 或 `topic0`；空过滤器会返回 `-32602 logs_filter_required`。运行第2步前，请将 `src/step2-key-and-logs.ts` 中的示例 `address` 改为要监听的合约地址。30秒监听期间没有匹配事件，并不代表连接失败。参见 [WebSocket 订阅指南](https://docs.blockvectra.com/zh/guides/websocket-subscriptions/)。
+
 运行这一步会为该钱包创建真实账户。如设置 `WALLET_PRIVATE_KEY`，只从本地环境变量读取，切勿提交到仓库；不设置则在内存里生成一次性钱包，运行结束即丢弃，想再次登录同一账户请设置 `WALLET_PRIVATE_KEY`。`.env` 与钱包文件已写入 `.gitignore`。
 
 ## 第 3 步：切到主网

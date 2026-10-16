@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "dated_internal_QA_example",
+  "command": [
+    "npm",
+    "run",
+    "walkthrough"
+  ],
+  "source_revision": "f350d8b120c7fa52dc7fa46a95fc5318d5b948b5",
+  "source_PR": "https://github.com/blockvectra/robinhood-testnet-starter/pull/5",
+  "started_at_utc": "2026-10-16T04:18:58.720725+00:00",
+  "finished_with_cleanup_at_utc": "2026-10-16T04:19:44.567118+00:00",
+  "runtime": "v24.21.0",
+  "source_modified_or_destinations_rerouted": false,
+  "observations": {
+    "account_created": true,
+    "keys_created": 1,
+    "subscription_acknowledged": true,
+    "seconds_ack_to_unsubscribe_request": 30.003,
+    "unsubscribe_result": true,
+    "matching_log_events": 0,
+    "mainnet_block_read": true,
+    "stocks_HTTP_status": 200,
+    "stocks_JSON_parsed": true,
+    "exit_code": 0
+  },
+  "cleanup": {
+    "performed_by_QA_harness_after_command": true,
+    "automatic_by_starter": false,
+    "own_key_revoke_HTTP_status": 200,
+    "post_revoke_observed_HTTP_status": 401
+  },
+  "limits": [
+    "One internal real-service run; not external adoption or an availability guarantee.",
+    "The first connection succeeded in this run; transient recovery was tested separately with isolated failure fixtures.",
+    "No matching logs arrived; this does not prove real contract event delivery.",
+    "Stocks are indexed on-chain activity, not real-time quotes; no complete freshness metadata was archived.",
+    "Node 24 was exercised; Node 18 runtime was not exercised in this QA run.",
+    "This run supplied a dedicated QA wallet through WALLET_PRIVATE_KEY; it did not exercise the CLI-generated wallet, an existing API key, or standalone step3."
+  ],
+  "contains_full_credentials": false,
+  "setup": {
+    "existing_API_key_supplied": false,
+    "dedicated_new_QA_wallet_private_key_supplied_via_environment": true
+  }
+}

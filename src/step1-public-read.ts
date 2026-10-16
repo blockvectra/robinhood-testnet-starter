@@ -7,10 +7,24 @@ const SLUG = "robinhood_testnet";
 const address = (process.argv[2] ?? "0x0000000000000000000000000000000000000000") as Address;
 
 const chain = await getChain(SLUG);
+
+if (!Number.isSafeInteger(chain.chain_id) || chain.chain_id <= 0) {
+  throw new Error(
+    `invalid catalog chain_id for ${SLUG}: expected a positive safe integer, got ${String(chain.chain_id)}`,
+  );
+}
+
 const client = httpClient(chain, `${API_BASE}/${SLUG}/public`);
 
-const [chainId, blockNumber, balance] = await Promise.all([
-  client.getChainId(),
+// Confirm the network before any other read.
+const chainId = await client.getChainId();
+if (chainId !== chain.chain_id) {
+  throw new Error(
+    `chain ID mismatch for ${SLUG}: expected ${chain.chain_id} (catalog), actual ${chainId} (eth_chainId)`,
+  );
+}
+
+const [blockNumber, balance] = await Promise.all([
   client.getBlockNumber(),
   client.getBalance({ address }),
 ]);

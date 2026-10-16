@@ -35,6 +35,8 @@ npm run step1            # 或：npm run step1 -- 0x你的地址
 
 用 viem 连公开端点 `https://api.blockvectra.com/v1/robinhood_testnet/public`，读取 `eth_chainId`（`0xb626`）、最新区块号和某地址余额，无需账户。
 
+第 1 步会先对照实时目录（`GET /v1/chains`）确认链 ID，通过后才读取区块和余额。目录中的 `chain_id` 无效，或与 `eth_chainId` 不一致时，第 1 步以非 0 退出，`npm run walkthrough` 不会继续进入开户/领 key 阶段。该保护只适用于本模板的第 1 步及其 walkthrough 入口，并非每个 RPC 或 MCP 请求都有。
+
 ## 第 2 步：程序化开户拿 key，用 WebSocket 订阅 logs
 
 ```bash

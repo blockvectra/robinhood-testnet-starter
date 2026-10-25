@@ -35,15 +35,17 @@
         "WALLET_PRIVATE_KEY"
       ],
       "effects": [
-        "An existing BLOCKVECTRA_API_KEY skips wallet login and key creation.",
-        "Without an existing API key, signs a SIWE login message and creates one API key; the first sign-in for that wallet creates an account.",
-        "Without WALLET_PRIVATE_KEY, a fresh throwaway wallet is generated in memory; repeated runs create new accounts.",
-        "Generated wallet/key secrets are discarded from memory at process exit; created server-side keys are not automatically revoked.",
+        "An existing BLOCKVECTRA_API_KEY skips wallet resolution, wallet file access and key creation.",
+        "Without an existing API key, resolves a login identity, signs a SIWE login message and creates one API key; the first sign-in for that wallet creates an account.",
+        "WALLET_PRIVATE_KEY takes precedence over .agent-wallet.json and leaves that file unread and unchanged.",
+        "Without WALLET_PRIVATE_KEY, the first run creates .agent-wallet.json (plaintext private key, mode 0600, ignored by *wallet*.json); later runs in the same directory reuse the same wallet and account.",
+        "Reusing the wallet does not reuse the API key: each run without BLOCKVECTRA_API_KEY still creates a new server-side key, which is not automatically revoked.",
+        "Wallet read, format, permission or write errors stop step 2 before its SIWE challenge; the walkthrough still performs step 1's public HTTP reads first.",
         "No on-chain transaction is submitted.",
-        "If supplying WALLET_PRIVATE_KEY, use a dedicated throwaway wallet, never one holding funds or used elsewhere."
+        "Use a dedicated wallet, not one holding funds or used elsewhere; back up and protect .agent-wallet.json, and never commit it or pass the private key as a command-line argument."
       ],
       "success": "Step1 passes; logs subscription acknowledged, 30 seconds monitored, unsubscribe result=true; mainnet RPC and stocks reads succeed; exit 0.",
-      "failure": "Non-zero exit; logs setup/listening/unsubscribe failure prevents the mainnet read.",
+      "failure": "Non-zero exit; wallet errors stop step 2 before the challenge, and logs setup/listening/unsubscribe failure prevents the mainnet read.",
       "guide": "https://docs.blockvectra.com/en/guides/robinhood-testnet-starter/?ref=gh-robinhood-testnet-starter",
       "example": "verified-walkthrough.example.json",
       "existing_api_key_required": false,

@@ -1,8 +1,7 @@
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import type { Hex } from "viem";
 import { getWebSocketRpcClient } from "viem/utils";
 import { CONSOLE_API, REF, getChain, mask, wsUrl } from "./shared.js";
 import { readMainnet } from "./mainnet-read.js";
+import { loadOrCreateWallet } from "./wallet.js";
 
 // Step 2: get an API key (programmatically, via a wallet signature) and stream logs over WebSocket.
 // Pass --then-mainnet to reuse the same in-memory key for the mainnet read after the 30s window.
@@ -19,8 +18,10 @@ async function post<T>(path: string, body: unknown, token?: string): Promise<T> 
 }
 
 async function provisionKey(): Promise<string> {
-  const pk = (process.env.WALLET_PRIVATE_KEY as Hex | undefined) ?? generatePrivateKey();
-  const account = privateKeyToAccount(pk);
+  const { account } = loadOrCreateWallet({
+    walletFile: ".agent-wallet.json",
+    privateKey: process.env.WALLET_PRIVATE_KEY,
+  });
   console.log(`wallet: ${account.address}`);
 
   // SIWE: ask for a challenge, sign it verbatim (EIP-191), log in. A first sign-in creates the account.

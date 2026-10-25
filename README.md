@@ -15,15 +15,25 @@ Guide: [Robinhood Chain Testnet starter](https://docs.blockvectra.com/en/guides/
 | Mainnet RPC and indexed activity | `npm run step3` | Requires `BLOCKVECTRA_API_KEY`; reads on-chain activity, not stock-market quotes. |
 | Test ETH | [Faucet guide](https://docs.blockvectra.com/en/guides/robinhood-testnet-faucet/?ref=gh-robinhood-testnet-starter) | Guide only: this repository does not submit a faucet request. |
 
-## Setup
+## Setup: first keyless run
 
 ```bash
-npm install
+git clone https://github.com/blockvectra/robinhood-testnet-starter.git
+cd robinhood-testnet-starter
+npm ci --ignore-scripts
+npm run step1
+```
+
+This needs Node.js 18 or newer, plus npm and git. No account, wallet or API key is involved: step 1 checks the chain ID against the live catalog, then reads the block and balance. If it errors, stop and check the reported error before continuing.
+
+Offline checks (no network):
+
+```bash
 npm run typecheck
 npm test
 ```
 
-Node.js 18 or newer. `npm test` runs the offline wallet tests and cannot reach the network. Export variables in your shell; `.env` is not loaded automatically.
+`npm test` runs the offline wallet tests and cannot reach the network. Export variables in your shell; `.env` is not loaded automatically.
 
 ## One command: keyless read, get a key, filtered logs, mainnet read
 

@@ -15,15 +15,25 @@
 | 主网 RPC 与索引活动数据 | `npm run step3` | 需要 `BLOCKVECTRA_API_KEY`；读取链上活动数据，不是股票行情。 |
 | 测试 ETH | [Faucet 指南](https://docs.blockvectra.com/zh/guides/robinhood-testnet-faucet/?ref=gh-robinhood-testnet-starter) | 仅指南：本仓库不会提交领取请求。 |
 
-## 准备
+## 准备：首次免 key 运行
 
 ```bash
-npm install
+git clone https://github.com/blockvectra/robinhood-testnet-starter.git
+cd robinhood-testnet-starter
+npm ci --ignore-scripts
+npm run step1
+```
+
+需要 Node.js 18 及以上，以及 npm 和 git。这一步不需要账户、钱包或 API key：第 1 步先对照实时目录检查链 ID，再读取区块和余额。出错时先检查报错，再继续后续步骤。
+
+离线检查（不访问网络）：
+
+```bash
 npm run typecheck
 npm test
 ```
 
-需要 Node.js 18 及以上。`npm test` 运行离线钱包测试，不会访问网络。变量请在 shell 里 export（不会自动加载 `.env`）。
+`npm test` 运行离线钱包测试，不会访问网络。变量请在 shell 里 export（不会自动加载 `.env`）。
 
 ## 一条命令：免 key 读取、领 key、带过滤的日志订阅、主网读取
 
